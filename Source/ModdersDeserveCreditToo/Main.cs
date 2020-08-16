@@ -14,10 +14,6 @@ namespace ModdersDeserveCreditToo
 
     public static class Main
     {
-        public static Texture2D TextureUncategorized = ContentFinder<Texture2D>.Get("UI/ModOptions/ModdersDeserveCredit/uncategorized");
-        public static Texture2D TextureCategorized   = ContentFinder<Texture2D>.Get("UI/ModOptions/ModdersDeserveCredit/categorized");
-
-
         static Main()
         {
             Harmony harmony = new Harmony("rimworld.erdelf.ModdersDeserveCreditToo");
@@ -100,13 +96,13 @@ namespace ModdersDeserveCreditToo
 
     public class ModdersDeserveCreditModSettings : ModSettings
     {
-        public bool useCategories = false;
+        public bool useCategories = true;
 
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref this.useCategories, "useCategories", false);
+            Scribe_Values.Look(ref this.useCategories, "useCategories", true);
         }
     }
 
@@ -140,10 +136,12 @@ namespace ModdersDeserveCreditToo
             List<Tuple<string, string>> list = Main.GetMods().ToList();
             
             Rect rect = new Rect(options.GetRect(inRect.height * 0.8f));
-            Rect viewRect = new Rect(Vector2.zero, new Vector2(rect.width - 20f, (list.Count) * (Text.LineHeight + options.verticalSpacing)));
+            Rect viewRect = new Rect(Vector2.zero, new Vector2(rect.width - 20f, (list.Count) * (Text.LineHeight + options.verticalSpacing) + 8f));
 
-
-
+            Widgets.DrawBoxSolid(rect, new Color(0.25f, 0.25f, 0.25f, 0.25f));
+            GUI.color = Color.cyan;
+            Widgets.DrawBox(rect.ExpandedBy(3f), 3);
+            GUI.color = defaultColor;
             options.BeginScrollView(rect, ref this.scrollPos, ref viewRect);
 
             string text = string.Empty;
@@ -156,8 +154,6 @@ namespace ModdersDeserveCreditToo
             }
 
             options.EndScrollView(ref viewRect);
-
-            //GUI.DrawTexture(inRect.TopPart(0.8f).BottomPart(0.8f), this.settings.useCategories ?  Main.TextureCategorized : Main.TextureUncategorized, ScaleMode.ScaleToFit);
 
             options.End();
             settings.Write();
