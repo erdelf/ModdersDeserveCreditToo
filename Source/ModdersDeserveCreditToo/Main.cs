@@ -14,13 +14,6 @@ namespace ModdersDeserveCreditToo
 
     public static class Main
     {
-        static Main()
-        {
-            Harmony harmony = new Harmony("rimworld.erdelf.ModdersDeserveCreditToo");
-
-            harmony.Patch(AccessTools.Method(typeof(CreditsAssembler), nameof(CreditsAssembler.AllCredits)), postfix: new HarmonyMethod(typeof(Main), nameof(Postfix)));
-        }
-
         public static IEnumerable<Tuple<string, string>> GetMods()
         {
 
@@ -38,7 +31,7 @@ namespace ModdersDeserveCreditToo
                 LanguageDatabase.activeLanguage.keyedReplacements.Add(key, new LoadedLanguage.KeyedReplacement() { fileSource = "CustomCredits", fileSourceFullPath = "CustomCreditLand", fileSourceLine = 0, isPlaceholder = false, key = key, value = key });
         }
 
-        static IEnumerable<CreditsEntry> Postfix(IEnumerable<CreditsEntry> __result)
+        public static IEnumerable<CreditsEntry> Postfix(IEnumerable<CreditsEntry> __result)
         {
             foreach (CreditsEntry creditsEntry in __result)
             {
@@ -115,6 +108,8 @@ namespace ModdersDeserveCreditToo
         public ModdersDeserveCreditMod(ModContentPack content) : base(content)
         {
             settings = this.GetSettings<ModdersDeserveCreditModSettings>();
+            Harmony harmony = new Harmony("rimworld.erdelf.ModdersDeserveCreditToo");
+            harmony.Patch(AccessTools.Method(typeof(CreditsAssembler), nameof(CreditsAssembler.AllCredits)), postfix: new HarmonyMethod(typeof(Main), nameof(Main.Postfix)));
         }
 
         private Vector2 scrollPos;
